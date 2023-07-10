@@ -79,9 +79,3 @@ On image:
 ``` bash
 python detect.py --weights runs/exp_v7-CTA --conf 0.25 --img-size 640 --source data/val/images/
 ```
-
-<div align="center">
-    <a href="./">
-        <img src="./figure/horses_prediction.jpg" width="59%"/>
-    </a>
-</div>
