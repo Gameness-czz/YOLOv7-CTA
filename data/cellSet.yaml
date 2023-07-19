@@ -6,21 +6,29 @@
 #     /yolov5
 
 # train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
-train: D:/python_project/yolov7-CTA/data/train  # 821 images
-val: D:/python_project/yolov7-CTA/data/val  # 362 images
-#test: D:/python_project/yolov7-CTA/data/test  # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
+path: D:/python_project/YOLOv7-CTA  # dataset root dir
+train: data/train  # 821 images
+val: data/val  # 362 images
+#test: data/test
+#test: ../coco/test-dev2017.txt  # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
 
-# number of classes
-nc: 15
-
-# class names
-names: [ "myeloblast", "promyelocyte",
-         "N-myelocyte", "N-metamyelocyte", "N-band", "N-segmented",
-         "E-myelocyte", "E-metamyelocyte", "E-band", "E-segmented",
-         "basophil",
-         "P-normoblast", "O-normoplast",
-         "lymphocyte",
-         "monocyte"]
+# Classes
+names:
+  0: myeloblast
+  1: promyelocyte
+  2: N-myelocyte
+  3: N-metamyelocyte
+  4: N-band
+  5: N-segmented
+  6: E-myelocyte
+  7: E-metamyelocyte
+  8: E-band
+  9: E-segmented
+  10: basophil
+  11: P-normoblast
+  12: O-normoplast
+  13: lymphocyte
+  14: monocyte
 
 # Print classes
 # with open('data/coco.yaml') as f:
