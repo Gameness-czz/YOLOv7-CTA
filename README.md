@@ -2,7 +2,7 @@
 
 Implementation of paper - @link
 
-| ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps1.jpg) | ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps2.jpg) |
+| ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7/PR_curve.png?raw=true) | ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7-CTA_Focal_CIoU/PR_curve.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
