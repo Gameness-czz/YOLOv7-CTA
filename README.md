@@ -6,43 +6,43 @@ Implementation of paper - @link
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
-**Figure** **1. Precision–recall curve of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
+**Figure** **1**. Precision–recall curve of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
 
 | ![confusion_matrix.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7/confusion_matrix.png?raw=true) | ![confusion_matrix.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7-CTA_Focal_CIoU/confusion_matrix.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
-**Figure** **2. Confusion matrix of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
+**Figure** **2**. Confusion matrix of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
 
 | ![precision.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/precision.png?raw=true) | ![mAP50.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/mAP50.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
-**Figure** **3. The training results of various models were compared: (a) precision curve; (b) mAP@0.5 curve.
+**Figure** **3**. The training results of various models were compared: (a) precision curve; (b) mAP@0.5 curve.
 
 | ![cls_loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/cls_loss.png?raw=true) | ![box_loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/box_loss.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
-**Figure** **4. The training loss curves of various models were compared: (a) cls_loss curve; (b) box_loss curve.
+**Figure** **4**. The training loss curves of various models were compared: (a) cls_loss curve; (b) box_loss curve.
 
 ![loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/loss.png?raw=true)
 
-**Figure ****5. The loss curves of the models were compared on the testing dataset.
+**Figure ** **5**. The loss curves of the models were compared on the testing dataset.
 
 Demo
 
 - ![cls_loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/1.png?raw=true)
 
-  ​                                  **Figure **6****.** Detection outcomes of images containing fine-grained feature objects and complex backgrounds.
+  ​                                  **Figure** **6**. Detection outcomes of images containing fine-grained feature objects and complex backgrounds.
 
   ![cls_loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/2.png?raw=true)
 
-  ​                                                                        **Figure** 8****.** Detection results for images with dense objects.
+  ​                                                                        **Figure** **7**. Detection results for images with dense objects.
 
   ![cls_loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/3.png?raw=true)
 
-  ​                                                              **Figure** 9****.** Detection results for images with objects of complex features. 
+  ​                                                              **Figure** **8**. Detection results for images with objects of complex features. 
 
 ## Performance 
 
