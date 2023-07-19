@@ -15,7 +15,7 @@ from utils.general import coco80_to_coco91_class, check_dataset, check_file, che
     box_iou, non_max_suppression, scale_coords, xyxy2xywh, xywh2xyxy, set_logging, increment_path, colorstr
 from utils.metrics import ap_per_class, ConfusionMatrix
 from utils.plots import plot_images, output_to_target, plot_study_txt
-from utils.torch_utils import select_device, time_synchronized
+from utils.torch_utils import select_device, time_synchronized, TracedModel
 
 
 def test(data,
@@ -38,6 +38,7 @@ def test(data,
          wandb_logger=None,
          compute_loss=None,
          half_precision=True,
+         trace=False,
          is_coco=False):
     # Initialize/load model and set device
     training = model is not None
@@ -56,10 +57,9 @@ def test(data,
         model = attempt_load(weights, map_location=device)  # load FP32 model
         gs = max(int(model.stride.max()), 32)  # grid size (max stride)
         imgsz = check_img_size(imgsz, s=gs)  # check img_size
-
-        # Multi-GPU disabled, incompatible with .half() https://github.com/ultralytics/yolov5/issues/99
-        # if device.type != 'cpu' and torch.cuda.device_count() > 1:
-        #     model = nn.DataParallel(model)
+        
+        if trace:
+            model = TracedModel(model, device, opt.img_size)
 
     # Half
     half = device.type != 'cpu' and half_precision  # half precision only supported on CUDA
@@ -70,7 +70,7 @@ def test(data,
     model.eval()
     if isinstance(data, str):
         is_coco = data.endswith('coco.yaml')
-        with open(data) as f:
+        with open(data, encoding='utf-8') as f:
             data = yaml.load(f, Loader=yaml.SafeLoader)
     check_dataset(data)  # check
     nc = 1 if single_cls else int(data['nc'])  # number of classes
@@ -250,7 +250,7 @@ def test(data,
     # Save JSON
     if save_json and len(jdict):
         w = Path(weights[0] if isinstance(weights, list) else weights).stem if weights is not None else ''  # weights
-        anno_json = '../coco/annotations/instances_val2017.json'  # annotations json
+        anno_json = './coco/annotations/instances_val2017.json'  # annotations json
         pred_json = str(save_dir / f"{w}_predictions.json")  # predictions json
         print('\nEvaluating pycocotools mAP... saving %s...' % pred_json)
         with open(pred_json, 'w') as f:
@@ -285,14 +285,14 @@ def test(data,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='test.py')
-    parser.add_argument('--weights', nargs='+', type=str, default='runs/train/exp_v5l/weights/best.pt', help='model.pt path(s)')
-    parser.add_argument('--data', type=str, default='data/cellSet.yaml', help='*.data path')
+    parser.add_argument('--weights', nargs='+', type=str, default='runs/train/exp_v7_CoordAtt/weights/best.pt', help='model.pt path(s)')
+    parser.add_argument('--data', type=str, default='data/custom.yaml', help='*.data path')
     parser.add_argument('--batch-size', type=int, default=4, help='size of each image batch')
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.001, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.6, help='IOU threshold for NMS')
+    parser.add_argument('--iou-thres', type=float, default=0.65, help='IOU threshold for NMS')
     parser.add_argument('--task', default='val', help='train, val, test, speed or study')
-    parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     parser.add_argument('--verbose', action='store_true', help='report mAP by class')
@@ -301,13 +301,15 @@ if __name__ == '__main__':
     parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
     parser.add_argument('--save-json', action='store_true', help='save a cocoapi-compatible JSON results file')
     parser.add_argument('--project', default='runs/test', help='save to project/name')
-    parser.add_argument('--name', default='exp_yolov5l', help='save to project/name')
+    parser.add_argument('--name', default='exp_v7_CoordAtt', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
+    parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
     opt.save_json |= opt.data.endswith('coco.yaml')
     opt.data = check_file(opt.data)  # check file
     print(opt)
     # check_requirements()
+    torch.backends.cudnn.enabled = False
 
     if opt.task in ('train', 'val', 'test'):  # run normally
         test(opt.data,
@@ -323,6 +325,7 @@ if __name__ == '__main__':
              save_txt=opt.save_txt | opt.save_hybrid,
              save_hybrid=opt.save_hybrid,
              save_conf=opt.save_conf,
+             trace=not opt.no_trace,
              )
 
     elif opt.task == 'speed':  # speed benchmarks
@@ -330,7 +333,7 @@ if __name__ == '__main__':
             test(opt.data, w, opt.batch_size, opt.img_size, 0.25, 0.45, save_json=False, plots=False)
 
     elif opt.task == 'study':  # run over a range of settings and save/plot
-        # python test.py --task study --data coco.yaml --iou 0.7 --weights yolov5s.pt yolov5m.pt yolov5l.pt yolov5x.pt
+        # python test.py --task study --data coco.yaml --iou 0.65 --weights yolov7.pt
         x = list(range(256, 1536 + 128, 128))  # x axis (image sizes)
         for w in opt.weights:
             f = f'study_{Path(opt.data).stem}_{Path(w).stem}.txt'  # filename to save to

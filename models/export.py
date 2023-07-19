@@ -1,9 +1,3 @@
-"""Exports a YOLOv5 *.pt model to ONNX and TorchScript formats
-
-Usage:
-    $ export PYTHONPATH="$PWD" && python models/export.py --weights ./weights/yolov5s.pt --img 640 --batch 1
-"""
-
 import argparse
 import sys
 import time
@@ -21,8 +15,8 @@ from utils.torch_utils import select_device
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', type=str, default='./yolov5s.pt', help='weights path')  # from yolov5/models/
-    parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
+    parser.add_argument('--weights', type=str, default='./yolor-csp-c.pt', help='weights path')
+    parser.add_argument('--img-size', nargs='+', type=int, default=[608, 608], help='image size')  # height, width
     parser.add_argument('--batch-size', type=int, default=1, help='batch size')
     parser.add_argument('--dynamic', action='store_true', help='dynamic ONNX axes')
     parser.add_argument('--grid', action='store_true', help='export Detect() layer grid')
@@ -62,7 +56,7 @@ if __name__ == '__main__':
     try:
         print('\nStarting TorchScript export with torch %s...' % torch.__version__)
         f = opt.weights.replace('.pt', '.torchscript.pt')  # filename
-        ts = torch.jit.trace(model, img)
+        ts = torch.jit.trace(model, img, strict=False)
         ts.save(f)
         print('TorchScript export success, saved as %s' % f)
     except Exception as e:

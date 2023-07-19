@@ -1,170 +1,234 @@
-<a href="https://apps.apple.com/app/id1452689527" target="_blank">
-<img src="https://user-images.githubusercontent.com/26833433/98699617-a1595a00-2377-11eb-8145-fc674eb9b1a7.jpg" width="1000"></a>
-&nbsp
+<<<<<<< Updated upstream
+# Official YOLOv7-CTA
 
-<a href="https://github.com/ultralytics/yolov5/actions"><img src="https://github.com/ultralytics/yolov5/workflows/CI%20CPU%20testing/badge.svg" alt="CI CPU testing"></a>
+Implementation of paper - @link
 
-This repository represents Ultralytics open-source research into future object detection methods, and incorporates lessons learned and best practices evolved over thousands of hours of training and evolution on anonymized client datasets. **All code and models are under active development, and are subject to modification or deletion without notice.** Use at your own risk.
+| ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps1.jpg) | ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps2.jpg) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (**a**)                                                      | (**b**)                                                      |
 
-<p align="center"><img width="800" src="https://user-images.githubusercontent.com/26833433/114313216-f0a5e100-9af5-11eb-8445-c682b60da2e3.png"></p>
-<details>
-  <summary>YOLOv5-P5 640 Figure (click to expand)</summary>
-  
-<p align="center"><img width="800" src="https://user-images.githubusercontent.com/26833433/114313219-f1d70e00-9af5-11eb-9973-52b1f98d321a.png"></p>
-</details>
-<details>
-  <summary>Figure Notes (click to expand)</summary>
-  
-  * GPU Speed measures end-to-end time per image averaged over 5000 COCO val2017 images using a V100 GPU with batch size 32, and includes image preprocessing, PyTorch FP16 inference, postprocessing and NMS. 
-  * EfficientDet data from [google/automl](https://github.com/google/automl) at batch size 8.
-  * **Reproduce** by `python test.py --task study --data coco.yaml --iou 0.7 --weights yolov5s6.pt yolov5m6.pt yolov5l6.pt yolov5x6.pt`
-</details>
+**Figure** **1****.** Precision–recall curve of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
 
-- **April 11, 2021**: [v5.0 release](https://github.com/ultralytics/yolov5/releases/tag/v5.0): YOLOv5-P6 1280 models, [AWS](https://github.com/ultralytics/yolov5/wiki/AWS-Quickstart), [Supervise.ly](https://github.com/ultralytics/yolov5/issues/2518) and [YouTube](https://github.com/ultralytics/yolov5/pull/2752) integrations.
-- **January 5, 2021**: [v4.0 release](https://github.com/ultralytics/yolov5/releases/tag/v4.0): nn.SiLU() activations, [Weights & Biases](https://wandb.ai/site?utm_campaign=repo_yolo_readme) logging, [PyTorch Hub](https://pytorch.org/hub/ultralytics_yolov5/) integration.
-- **August 13, 2020**: [v3.0 release](https://github.com/ultralytics/yolov5/releases/tag/v3.0): nn.Hardswish() activations, data autodownload, native AMP.
-- **July 23, 2020**: [v2.0 release](https://github.com/ultralytics/yolov5/releases/tag/v2.0): improved model definition, training and mAP.
+| ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps3.jpg) | ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps4.jpg) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (**a**)                                                      | (**b**)                                                      |
 
+**Figure** **2****.** Confusion matrix of different models: (a) YOLOv7 model; (b)YOLOv7-CTA.
 
-## Pretrained Checkpoints
+| ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps5.jpg) | ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps6.jpg) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (**a**)                                                      | (**b**)                                                      |
 
-[assets]: https://github.com/ultralytics/yolov5/releases
+**Figure** **3****.** The training results of various models were compared: (a) precision curve; (b) mAP@0.5 curve.
 
-Model |size<br><sup>(pixels) |mAP<sup>val<br>0.5:0.95 |mAP<sup>test<br>0.5:0.95 |mAP<sup>val<br>0.5 |Speed<br><sup>V100 (ms) | |params<br><sup>(M) |FLOPS<br><sup>640 (B)
----   |---  |---        |---         |---             |---                |---|---              |---
-[YOLOv5s][assets]    |640  |36.7     |36.7     |55.4     |**2.0** | |7.3   |17.0
-[YOLOv5m][assets]    |640  |44.5     |44.5     |63.3     |2.7     | |21.4  |51.3
-[YOLOv5l][assets]    |640  |48.2     |48.2     |66.9     |3.8     | |47.0  |115.4
-[YOLOv5x][assets]    |640  |**50.4** |**50.4** |**68.8** |6.1     | |87.7  |218.8
-| | | | | | || |
-[YOLOv5s6][assets]   |1280 |43.3     |43.3     |61.9     |**4.3** | |12.7  |17.4
-[YOLOv5m6][assets]   |1280 |50.5     |50.5     |68.7     |8.4     | |35.9  |52.4
-[YOLOv5l6][assets]   |1280 |53.4     |53.4     |71.1     |12.3    | |77.2  |117.7
-[YOLOv5x6][assets]   |1280 |**54.4** |**54.4** |**72.0** |22.4    | |141.8 |222.9
-| | | | | | || |
-[YOLOv5x6][assets] TTA |1280 |**55.0** |**55.0** |**72.0** |70.8 | |-  |-
+| ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps7.jpg) | ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps8.jpg) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| (**a**)                                                      | (**b**)                                                      |
 
-<details>
-  <summary>Table Notes (click to expand)</summary>
-  
-  * AP<sup>test</sup> denotes COCO [test-dev2017](http://cocodataset.org/#upload) server results, all other AP results denote val2017 accuracy.  
-  * AP values are for single-model single-scale unless otherwise noted. **Reproduce mAP** by `python test.py --data coco.yaml --img 640 --conf 0.001 --iou 0.65`  
-  * Speed<sub>GPU</sub> averaged over 5000 COCO val2017 images using a GCP [n1-standard-16](https://cloud.google.com/compute/docs/machine-types#n1_standard_machine_types) V100 instance, and includes FP16 inference, postprocessing and NMS. **Reproduce speed** by `python test.py --data coco.yaml --img 640 --conf 0.25 --iou 0.45`  
-  * All checkpoints are trained to 300 epochs with default settings and hyperparameters (no autoaugmentation). 
-  * Test Time Augmentation ([TTA](https://github.com/ultralytics/yolov5/issues/303)) includes reflection and scale augmentation. **Reproduce TTA** by `python test.py --data coco.yaml --img 1536 --iou 0.7 --augment`
-</details>
+**Figure** **4****.** The training loss curves of various models were compared: (a) cls_loss curve; (b) box_loss curve.
 
+![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps9.jpg) 
 
-## Requirements
+**Figure ****5****.** The loss curves of the models were compared on the testing dataset.
 
-Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/yolov5/blob/master/requirements.txt) dependencies installed, including `torch>=1.7`. To install run:
-```bash
-$ pip install -r requirements.txt
+Demo
+
+- ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps14.jpg)
+
+  ​                                  **Figure **6****.** Detection outcomes of images containing fine-grained feature objects and complex backgrounds.
+
+  ​                                                                 ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps11.jpg)  
+
+  ​                                                                      **Figure **7****.** Detection results for images with dense objects.
+
+  ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps12.jpg)
+
+  ​                                                                        **Figure** 8****.** Detection results for images with dense objects.
+
+  ![img](file:///C:\Users\PC\AppData\Local\Temp\ksohtml16000\wps13.jpg)
+
+  ​                                                              **Figure** 9****.** Detection results for images with objects of complex features. 
+
+## Performance 
+
+BM cells datasets
+
+| **Models**   | **Backbone**      | **mAP@0.5/%** | **FPS** |
+| ------------ | ----------------- | ------------- | ------- |
+| Faster R-CNN | ResNet50          | 74.7          | 7       |
+| YOLOv5l      | CSPDarkNet53      | 80.3          | 25      |
+| YOLOv7       | CBS + ELAN        | 81.9          | 26      |
+| YOLOv7-CTA   | CBS + CoTLAN + CA | 88.6          | 22      |
+
+## Testing
+
+``` bash
+python test.py --data data/custom.yaml --img 640 --batch 4 --conf 0.001 --iou 0.65 --device 0 --weights '' --name exp_v7-CTA
 ```
-
-
-## Tutorials
-
-* [Train Custom Data](https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data)&nbsp; 🚀 RECOMMENDED
-* [Tips for Best Training Results](https://github.com/ultralytics/yolov5/wiki/Tips-for-Best-Training-Results)&nbsp; ☘️ RECOMMENDED
-* [Weights & Biases Logging](https://github.com/ultralytics/yolov5/issues/1289)&nbsp; 🌟 NEW
-* [Supervisely Ecosystem](https://github.com/ultralytics/yolov5/issues/2518)&nbsp; 🌟 NEW
-* [Multi-GPU Training](https://github.com/ultralytics/yolov5/issues/475)
-* [PyTorch Hub](https://github.com/ultralytics/yolov5/issues/36)&nbsp; ⭐ NEW
-* [ONNX and TorchScript Export](https://github.com/ultralytics/yolov5/issues/251)
-* [Test-Time Augmentation (TTA)](https://github.com/ultralytics/yolov5/issues/303)
-* [Model Ensembling](https://github.com/ultralytics/yolov5/issues/318)
-* [Model Pruning/Sparsity](https://github.com/ultralytics/yolov5/issues/304)
-* [Hyperparameter Evolution](https://github.com/ultralytics/yolov5/issues/607)
-* [Transfer Learning with Frozen Layers](https://github.com/ultralytics/yolov5/issues/1314)&nbsp; ⭐ NEW
-* [TensorRT Deployment](https://github.com/wang-xinyu/tensorrtx)
-
-
-## Environments
-
-YOLOv5 may be run in any of the following up-to-date verified environments (with all dependencies including [CUDA](https://developer.nvidia.com/cuda)/[CUDNN](https://developer.nvidia.com/cudnn), [Python](https://www.python.org/) and [PyTorch](https://pytorch.org/) preinstalled):
-
-- **Google Colab and Kaggle** notebooks with free GPU: <a href="https://colab.research.google.com/github/ultralytics/yolov5/blob/master/tutorial.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a> <a href="https://www.kaggle.com/ultralytics/yolov5"><img src="https://kaggle.com/static/images/open-in-kaggle.svg" alt="Open In Kaggle"></a>
-- **Google Cloud** Deep Learning VM. See [GCP Quickstart Guide](https://github.com/ultralytics/yolov5/wiki/GCP-Quickstart)
-- **Amazon** Deep Learning AMI. See [AWS Quickstart Guide](https://github.com/ultralytics/yolov5/wiki/AWS-Quickstart)
-- **Docker Image**. See [Docker Quickstart Guide](https://github.com/ultralytics/yolov5/wiki/Docker-Quickstart) <a href="https://hub.docker.com/r/ultralytics/yolov5"><img src="https://img.shields.io/docker/pulls/ultralytics/yolov5?logo=docker" alt="Docker Pulls"></a>
-
-
-## Inference
-
-`detect.py` runs inference on a variety of sources, downloading models automatically from the [latest YOLOv5 release](https://github.com/ultralytics/yolov5/releases) and saving results to `runs/detect`.
-```bash
-$ python detect.py --source 0  # webcam
-                            file.jpg  # image 
-                            file.mp4  # video
-                            path/  # directory
-                            path/*.jpg  # glob
-                            'https://youtu.be/NUsoVlDFqZg'  # YouTube video
-                            'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
-```
-
-To run inference on example images in `data/images`:
-```bash
-$ python detect.py --source data/images --weights yolov5s.pt --conf 0.25
-
-Namespace(agnostic_nms=False, augment=False, classes=None, conf_thres=0.25, device='', exist_ok=False, img_size=640, iou_thres=0.45, name='exp', project='runs/detect', save_conf=False, save_txt=False, source='data/images/', update=False, view_img=False, weights=['yolov5s.pt'])
-YOLOv5 v4.0-96-g83dc1b4 torch 1.7.0+cu101 CUDA:0 (Tesla V100-SXM2-16GB, 16160.5MB)
-
-Fusing layers... 
-Model Summary: 224 layers, 7266973 parameters, 0 gradients, 17.0 GFLOPS
-image 1/2 /content/yolov5/data/images/bus.jpg: 640x480 4 persons, 1 bus, Done. (0.010s)
-image 2/2 /content/yolov5/data/images/zidane.jpg: 384x640 2 persons, 1 tie, Done. (0.011s)
-Results saved to runs/detect/exp2
-Done. (0.103s)
-```
-<img src="https://user-images.githubusercontent.com/26833433/97107365-685a8d80-16c7-11eb-8c2e-83aac701d8b9.jpeg" width="500">  
-
-### PyTorch Hub
-
-To run **batched inference** with YOLOv5 and [PyTorch Hub](https://github.com/ultralytics/yolov5/issues/36):
-```python
-import torch
-
-# Model
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-
-# Images
-dir = 'https://github.com/ultralytics/yolov5/raw/master/data/images/'
-imgs = [dir + f for f in ('zidane.jpg', 'bus.jpg')]  # batch of images
-
-# Inference
-results = model(imgs)
-results.print()  # or .show(), .save()
-```
-
 
 ## Training
 
-Run commands below to reproduce results on [COCO](https://github.com/ultralytics/yolov5/blob/master/data/scripts/get_coco.sh) dataset (dataset auto-downloads on first use). Training times for YOLOv5s/m/l/x are 2/4/6/8 days on a single V100 (multi-GPU times faster). Use the largest `--batch-size` your GPU allows (batch sizes shown for 16 GB devices).
-```bash
-$ python train.py --data coco.yaml --cfg yolov5s.yaml --weights '' --batch-size 64
-                                         yolov5m                                40
-                                         yolov5l                                24
-                                         yolov5x                                16
+Single GPU training
+
+``` bash
+python train.py --workers 0 --device 0 --batch-size 4 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7_CTA.yaml --weights '' --name exp_v7-CTA --hyp data/hyp.scratch.custom.yaml
 ```
-<img src="https://user-images.githubusercontent.com/26833433/90222759-949d8800-ddc1-11ea-9fa1-1c97eed2b963.png" width="900">
 
+## Inference
 
-## Citation
+On image:
+``` bash
+python detect.py --weights runs/exp_v7-CTA --conf 0.25 --img-size 640 --source data/val/images/
+```
+=======
+## Faster-Rcnn：Two-Stage目标检测模型在Pytorch当中的实现
+---
 
-[![DOI](https://zenodo.org/badge/264818686.svg)](https://zenodo.org/badge/latestdoi/264818686)
+## 目录
+1. [仓库更新 Top News](#仓库更新)
+2. [性能情况 Performance](#性能情况)
+3. [所需环境 Environment](#所需环境)
+4. [文件下载 Download](#文件下载)
+5. [预测步骤 How2predict](#预测步骤)
+6. [训练步骤 How2train](#训练步骤)
+7. [评估步骤 How2eval](#评估步骤)
+8. [参考资料 Reference](#Reference)
 
+## Top News
+**`2022-04`**:**进行了大幅度的更新，支持step、cos学习率下降法、支持adam、sgd优化器选择、支持学习率根据batch_size自适应调整、新增图片裁剪。**   
+BiliBili视频中的原仓库地址为：https://github.com/bubbliiiing/faster-rcnn-pytorch/tree/bilibili
 
-## About Us
+**`2021-10`**:**进行了大幅度的更新，增加了大量注释、增加了大量可调整参数、对代码的组成模块进行修改、增加fps、视频预测、批量预测等功能。**   
 
-Ultralytics is a U.S.-based particle physics and AI startup with over 6 years of expertise supporting government, academic and business clients. We offer a wide range of vision AI services, spanning from simple expert advice up to delivery of fully customized, end-to-end production solutions, including:
-- **Cloud-based AI** systems operating on **hundreds of HD video streams in realtime.**
-- **Edge AI** integrated into custom iOS and Android apps for realtime **30 FPS video inference.**
-- **Custom data training**, hyperparameter evolution, and model exportation to any destination.
+## 性能情况
+| 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
+| :-----: | :-----: | :------: | :------: | :------: | :-----: |
+| VOC07+12 | [voc_weights_resnet.pth](https://github.com/bubbliiiing/faster-rcnn-pytorch/releases/download/v1.0/voc_weights_resnet.pth) | VOC-Test07 | - | - | 80.36
+| VOC07+12 | [voc_weights_vgg.pth](https://github.com/bubbliiiing/faster-rcnn-pytorch/releases/download/v1.0/voc_weights_vgg.pth) | VOC-Test07 | - | - | 77.46
 
-For business inquiries and professional support requests please visit us at https://www.ultralytics.com. 
+## 所需环境
+torch == 1.2.0
 
+## 文件下载
+训练所需的voc_weights_resnet.pth或者voc_weights_vgg.pth以及主干的网络权重可以在百度云下载。  
+voc_weights_resnet.pth是resnet为主干特征提取网络用到的；  
+voc_weights_vgg.pth是vgg为主干特征提取网络用到的；   
+链接: https://pan.baidu.com/s/1S6wG8sEXBeoSec95NZxmlQ      
+提取码: 8mgp    
 
-## Contact
+VOC数据集下载地址如下，里面已经包括了训练集、测试集、验证集（与测试集一样），无需再次划分：  
+链接: https://pan.baidu.com/s/1-1Ej6dayrx3g0iAA88uY5A    
+提取码: ph32   
 
-**Issues should be raised directly in the repository.** For business inquiries or professional support requests please visit https://www.ultralytics.com or email Glenn Jocher at glenn.jocher@ultralytics.com. 
+## 训练步骤
+### a、训练VOC07+12数据集
+1. 数据集的准备   
+**本文使用VOC格式进行训练，训练前需要下载好VOC07+12的数据集，解压后放在根目录**  
+
+2. 数据集的处理   
+修改voc_annotation.py里面的annotation_mode=2，运行voc_annotation.py生成根目录下的2007_train.txt和2007_val.txt。   
+
+3. 开始网络训练   
+train.py的默认参数用于训练VOC数据集，直接运行train.py即可开始训练。   
+
+4. 训练结果预测   
+训练结果预测需要用到两个文件，分别是frcnn.py和predict.py。我们首先需要去frcnn.py里面修改model_path以及classes_path，这两个参数必须要修改。   
+**model_path指向训练好的权值文件，在logs文件夹里。   
+classes_path指向检测类别所对应的txt。**   
+完成修改后就可以运行predict.py进行检测了。运行后输入图片路径即可检测。   
+
+### b、训练自己的数据集
+1. 数据集的准备  
+**本文使用VOC格式进行训练，训练前需要自己制作好数据集，**    
+训练前将标签文件放在VOCdevkit文件夹下的VOC2007文件夹下的Annotation中。   
+训练前将图片文件放在VOCdevkit文件夹下的VOC2007文件夹下的JPEGImages中。   
+
+2. 数据集的处理  
+在完成数据集的摆放之后，我们需要利用voc_annotation.py获得训练用的2007_train.txt和2007_val.txt。   
+修改voc_annotation.py里面的参数。第一次训练可以仅修改classes_path，classes_path用于指向检测类别所对应的txt。   
+训练自己的数据集时，可以自己建立一个cls_classes.txt，里面写自己所需要区分的类别。   
+model_data/cls_classes.txt文件内容为：      
+```python
+cat
+dog
+...
+```
+修改voc_annotation.py中的classes_path，使其对应cls_classes.txt，并运行voc_annotation.py。  
+
+3. 开始网络训练  
+**训练的参数较多，均在train.py中，大家可以在下载库后仔细看注释，其中最重要的部分依然是train.py里的classes_path。**  
+**classes_path用于指向检测类别所对应的txt，这个txt和voc_annotation.py里面的txt一样！训练自己的数据集必须要修改！**  
+修改完classes_path后就可以运行train.py开始训练了，在训练多个epoch后，权值会生成在logs文件夹中。  
+
+4. 训练结果预测  
+训练结果预测需要用到两个文件，分别是frcnn.py和predict.py。在frcnn.py里面修改model_path以及classes_path。  
+**model_path指向训练好的权值文件，在logs文件夹里。  
+classes_path指向检测类别所对应的txt。**  
+完成修改后就可以运行predict.py进行检测了。运行后输入图片路径即可检测。  
+
+## 预测步骤
+### a、使用预训练权重
+1. 下载完库后解压，在百度网盘下载frcnn_weights.pth，放入model_data，运行predict.py，输入  
+```python
+img/street.jpg
+```
+2. 在predict.py里面进行设置可以进行fps测试和video视频检测。  
+### b、使用自己训练的权重
+1. 按照训练步骤训练。  
+2. 在frcnn.py文件里面，在如下部分修改model_path和classes_path使其对应训练好的文件；**model_path对应logs文件夹下面的权值文件，classes_path是model_path对应分的类**。  
+```python
+_defaults = {
+    #--------------------------------------------------------------------------#
+    #   使用自己训练好的模型进行预测一定要修改model_path和classes_path！
+    #   model_path指向logs文件夹下的权值文件，classes_path指向model_data下的txt
+    #   如果出现shape不匹配，同时要注意训练时的model_path和classes_path参数的修改
+    #--------------------------------------------------------------------------#
+    "model_path"    : 'model_data/voc_weights_resnet.pth',
+    "classes_path"  : 'model_data/voc_classes.txt',
+    #---------------------------------------------------------------------#
+    #   网络的主干特征提取网络，resnet50或者vgg
+    #---------------------------------------------------------------------#
+    "backbone"      : "resnet50",
+    #---------------------------------------------------------------------#
+    #   只有得分大于置信度的预测框会被保留下来
+    #---------------------------------------------------------------------#
+    "confidence"    : 0.5,
+    #---------------------------------------------------------------------#
+    #   非极大抑制所用到的nms_iou大小
+    #---------------------------------------------------------------------#
+    "nms_iou"       : 0.3,
+    #---------------------------------------------------------------------#
+    #   用于指定先验框的大小
+    #---------------------------------------------------------------------#
+    'anchors_size'  : [8, 16, 32],
+    #-------------------------------#
+    #   是否使用Cuda
+    #   没有GPU可以设置成False
+    #-------------------------------#
+    "cuda"          : True,
+}
+```
+3. 运行predict.py，输入  
+```python
+img/street.jpg
+```
+4. 在predict.py里面进行设置可以进行fps测试和video视频检测。  
+
+## 评估步骤 
+### a、评估VOC07+12的测试集
+1. 本文使用VOC格式进行评估。VOC07+12已经划分好了测试集，无需利用voc_annotation.py生成ImageSets文件夹下的txt。
+2. 在frcnn.py里面修改model_path以及classes_path。**model_path指向训练好的权值文件，在logs文件夹里。classes_path指向检测类别所对应的txt。**  
+3. 运行get_map.py即可获得评估结果，评估结果会保存在map_out文件夹中。
+
+### b、评估自己的数据集
+1. 本文使用VOC格式进行评估。  
+2. 如果在训练前已经运行过voc_annotation.py文件，代码会自动将数据集划分成训练集、验证集和测试集。如果想要修改测试集的比例，可以修改voc_annotation.py文件下的trainval_percent。trainval_percent用于指定(训练集+验证集)与测试集的比例，默认情况下 (训练集+验证集):测试集 = 9:1。train_percent用于指定(训练集+验证集)中训练集与验证集的比例，默认情况下 训练集:验证集 = 9:1。
+3. 利用voc_annotation.py划分测试集后，前往get_map.py文件修改classes_path，classes_path用于指向检测类别所对应的txt，这个txt和训练时的txt一样。评估自己的数据集必须要修改。
+4. 在frcnn.py里面修改model_path以及classes_path。**model_path指向训练好的权值文件，在logs文件夹里。classes_path指向检测类别所对应的txt。**  
+5. 运行get_map.py即可获得评估结果，评估结果会保存在map_out文件夹中。
+
+## Reference
+https://github.com/chenyuntc/simple-faster-rcnn-pytorch  
+https://github.com/eriklindernoren/PyTorch-YOLOv3  
+https://github.com/BobLiu20/YOLOv3_PyTorch  
+>>>>>>> Stashed changes

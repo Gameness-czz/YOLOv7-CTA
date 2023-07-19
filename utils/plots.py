@@ -34,6 +34,38 @@ def color_list():
     return [hex2rgb(h) for h in matplotlib.colors.TABLEAU_COLORS.values()]  # or BASE_ (8), CSS4_ (148), XKCD_ (949)
 
 
+def feature_visualization(x, module_type, stage, n=32, save_dir=Path('runs/detect/exp')):
+    """
+    x:              Features to be visualized
+    module_type:    Module type
+    stage:          Module stage within model
+    n:              Maximum number of feature maps to plot
+    save_dir:       Directory to save results
+    """
+    if 'Detect' not in module_type:
+        batch, channels, height, width = x.shape  # batch, channels, height, width
+        if height > 1 and width > 1:
+            f = save_dir / f"stage{stage}_{module_type.split('.')[-1]}_features.png"  # filename
+
+            blocks = torch.chunk(x[0].cpu(), channels, dim=0)  # select batch index 0, block by channels
+            n = min(n, channels)  # number of plots
+            fig, ax = plt.subplots(math.ceil(n / 8), 8, tight_layout=True)  # 8 rows x n/8 cols
+            ax = ax.ravel()
+            plt.subplots_adjust(wspace=0.05, hspace=0.05)
+            for i in range(n):
+                block = blocks[i].squeeze().detach().numpy()
+                block = (block - np.min(block)) / (np.max(block) - np.min(block))
+                temp = np.array(block * 255.0, dtype=np.uint8)
+                temp = cv2.applyColorMap(temp, cv2.COLORMAP_JET)
+                ax[i].imshow(temp, cmap=plt.cm.jet)  # cmap='gray'
+                ax[i].axis('off')
+
+            # LOGGER.info(f'Saving {f}... ({n}/{channels})')
+            plt.savefig(f, dpi=300, bbox_inches='tight')
+            plt.close()
+            np.save(str(f.with_suffix('.npy')), x[0].cpu().numpy())  # npy save
+
+
 def hist2d(x, y, n=100):
     # 2d histogram used in labels.png and evolve.png
     xedges, yedges = np.linspace(x.min(), x.max(), n), np.linspace(y.min(), y.max(), n)
@@ -93,8 +125,8 @@ def plot_wh_methods():  # from utils.plots import *; plot_wh_methods()
 
     fig = plt.figure(figsize=(6, 3), tight_layout=True)
     plt.plot(x, ya, '.-', label='YOLOv3')
-    plt.plot(x, yb ** 2, '.-', label='YOLOv5 ^2')
-    plt.plot(x, yb ** 1.6, '.-', label='YOLOv5 ^1.6')
+    plt.plot(x, yb ** 2, '.-', label='YOLOR ^2')
+    plt.plot(x, yb ** 1.6, '.-', label='YOLOR ^1.6')
     plt.xlim(left=-4, right=4)
     plt.ylim(bottom=0, top=6)
     plt.xlabel('input')
@@ -245,7 +277,7 @@ def plot_study_txt(path='', x=None):  # from utils.plots import *; plot_study_tx
     # ax = ax.ravel()
 
     fig2, ax2 = plt.subplots(1, 1, figsize=(8, 4), tight_layout=True)
-    # for f in [Path(path) / f'study_coco_{x}.txt' for x in ['yolov5s6', 'yolov5m6', 'yolov5l6', 'yolov5x6']]:
+    # for f in [Path(path) / f'study_coco_{x}.txt' for x in ['yolor-p6', 'yolor-w6', 'yolor-e6', 'yolor-d6']]:
     for f in sorted(Path(path).glob('study*.txt')):
         y = np.loadtxt(f, dtype=np.float32, usecols=[0, 1, 2, 3, 7, 8, 9], ndmin=2).T
         x = np.arange(y.shape[1]) if x is None else np.array(x)
@@ -400,7 +432,7 @@ def plot_results_overlay(start=0, stop=0):  # from utils.plots import *; plot_re
 
 
 def plot_results(start=0, stop=0, bucket='', id=(), labels=(), save_dir=''):
-    # Plot training 'results*.txt'. from utils.plots import *; plot_results(save_dir='runs/train/exp')
+    # Plot training 'results*.txt'. from utils.plots import *; plot_results(save_dir='runs/train/exp_CoT3_CBAM')
     fig, ax = plt.subplots(2, 5, figsize=(12, 6), tight_layout=True)
     ax = ax.ravel()
     s = ['Box', 'Objectness', 'Classification', 'Precision', 'Recall',
@@ -433,3 +465,59 @@ def plot_results(start=0, stop=0, bucket='', id=(), labels=(), save_dir=''):
 
     ax[1].legend()
     fig.savefig(Path(save_dir) / 'results.png', dpi=200)
+
+
+def output_to_keypoint(output):
+    # Convert model output to target format [batch_id, class_id, x, y, w, h, conf]
+    targets = []
+    for i, o in enumerate(output):
+        kpts = o[:, 6:]
+        o = o[:, :6]
+        for index, (*box, conf, cls) in enumerate(o.cpu().numpy()):
+            targets.append([i, cls, *list(*xyxy2xywh(np.array(box)[None])), conf, *list(kpts.cpu().numpy()[index])])
+    return np.array(targets)
+
+
+def plot_skeleton_kpts(im, kpts, steps, orig_shape=None):
+    # Plot the skeleton and keypointsfor coco datatset
+    palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
+                        [230, 230, 0], [255, 153, 255], [153, 204, 255],
+                        [255, 102, 255], [255, 51, 255], [102, 178, 255],
+                        [51, 153, 255], [255, 153, 153], [255, 102, 102],
+                        [255, 51, 51], [153, 255, 153], [102, 255, 102],
+                        [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
+                        [255, 255, 255]])
+
+    skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
+                [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
+                [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
+
+    pose_limb_color = palette[[9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16]]
+    pose_kpt_color = palette[[16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9]]
+    radius = 5
+    num_kpts = len(kpts) // steps
+
+    for kid in range(num_kpts):
+        r, g, b = pose_kpt_color[kid]
+        x_coord, y_coord = kpts[steps * kid], kpts[steps * kid + 1]
+        if not (x_coord % 640 == 0 or y_coord % 640 == 0):
+            if steps == 3:
+                conf = kpts[steps * kid + 2]
+                if conf < 0.5:
+                    continue
+            cv2.circle(im, (int(x_coord), int(y_coord)), radius, (int(r), int(g), int(b)), -1)
+
+    for sk_id, sk in enumerate(skeleton):
+        r, g, b = pose_limb_color[sk_id]
+        pos1 = (int(kpts[(sk[0] - 1) * steps]), int(kpts[(sk[0] - 1) * steps + 1]))
+        pos2 = (int(kpts[(sk[1] - 1) * steps]), int(kpts[(sk[1] - 1) * steps + 1]))
+        if steps == 3:
+            conf1 = kpts[(sk[0] - 1) * steps + 2]
+            conf2 = kpts[(sk[1] - 1) * steps + 2]
+            if conf1 < 0.5 or conf2 < 0.5:
+                continue
+        if pos1[0] % 640 == 0 or pos1[1] % 640 == 0 or pos1[0] < 0 or pos1[1] < 0:
+            continue
+        if pos2[0] % 640 == 0 or pos2[1] % 640 == 0 or pos2[0] < 0 or pos2[1] < 0:
+            continue
+        cv2.line(im, pos1, pos2, (int(r), int(g), int(b)), thickness=2)

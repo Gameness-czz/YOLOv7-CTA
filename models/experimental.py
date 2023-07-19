@@ -1,6 +1,5 @@
-# YOLOv5 experimental modules
-
 import numpy as np
+import random
 import torch
 import torch.nn as nn
 
@@ -43,34 +42,6 @@ class Sum(nn.Module):
         return y
 
 
-class GhostConv(nn.Module):
-    # Ghost Convolution https://github.com/huawei-noah/ghostnet
-    def __init__(self, c1, c2, k=1, s=1, g=1, act=True):  # ch_in, ch_out, kernel, stride, groups
-        super(GhostConv, self).__init__()
-        c_ = c2 // 2  # hidden channels
-        self.cv1 = Conv(c1, c_, k, s, None, g, act)
-        self.cv2 = Conv(c_, c_, 5, 1, None, c_, act)
-
-    def forward(self, x):
-        y = self.cv1(x)
-        return torch.cat([y, self.cv2(y)], 1)
-
-
-class GhostBottleneck(nn.Module):
-    # Ghost Bottleneck https://github.com/huawei-noah/ghostnet
-    def __init__(self, c1, c2, k=3, s=1):  # ch_in, ch_out, kernel, stride
-        super(GhostBottleneck, self).__init__()
-        c_ = c2 // 2
-        self.conv = nn.Sequential(GhostConv(c1, c_, 1, 1),  # pw
-                                  DWConv(c_, c_, k, s, act=False) if s == 2 else nn.Identity(),  # dw
-                                  GhostConv(c_, c2, 1, 1, act=False))  # pw-linear
-        self.shortcut = nn.Sequential(DWConv(c1, c1, k, s, act=False),
-                                      Conv(c1, c2, 1, 1, act=False)) if s == 2 else nn.Identity()
-
-    def forward(self, x):
-        return self.conv(x) + self.shortcut(x)
-
-
 class MixConv2d(nn.Module):
     # Mixed Depthwise Conv https://arxiv.org/abs/1907.09595
     def __init__(self, c1, c2, k=(1, 3), s=1, equal_ch=True):
@@ -110,7 +81,171 @@ class Ensemble(nn.ModuleList):
         return y, None  # inference, train output
 
 
-def attempt_load(weights, map_location=None):
+class ORT_NMS(torch.autograd.Function):
+    '''ONNX-Runtime NMS operation'''
+
+    @staticmethod
+    def forward(ctx,
+                boxes,
+                scores,
+                max_output_boxes_per_class=torch.tensor([100]),
+                iou_threshold=torch.tensor([0.45]),
+                score_threshold=torch.tensor([0.25])):
+        device = boxes.device
+        batch = scores.shape[0]
+        num_det = random.randint(0, 100)
+        batches = torch.randint(0, batch, (num_det,)).sort()[0].to(device)
+        idxs = torch.arange(100, 100 + num_det).to(device)
+        zeros = torch.zeros((num_det,), dtype=torch.int64).to(device)
+        selected_indices = torch.cat([batches[None], zeros[None], idxs[None]], 0).T.contiguous()
+        selected_indices = selected_indices.to(torch.int64)
+        return selected_indices
+
+    @staticmethod
+    def symbolic(g, boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold):
+        return g.op("NonMaxSuppression", boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
+
+
+class TRT_NMS(torch.autograd.Function):
+    '''TensorRT NMS operation'''
+
+    @staticmethod
+    def forward(
+            ctx,
+            boxes,
+            scores,
+            background_class=-1,
+            box_coding=1,
+            iou_threshold=0.45,
+            max_output_boxes=100,
+            plugin_version="1",
+            score_activation=0,
+            score_threshold=0.25,
+    ):
+        batch_size, num_boxes, num_classes = scores.shape
+        num_det = torch.randint(0, max_output_boxes, (batch_size, 1), dtype=torch.int32)
+        det_boxes = torch.randn(batch_size, max_output_boxes, 4)
+        det_scores = torch.randn(batch_size, max_output_boxes)
+        det_classes = torch.randint(0, num_classes, (batch_size, max_output_boxes), dtype=torch.int32)
+        return num_det, det_boxes, det_scores, det_classes
+
+    @staticmethod
+    def symbolic(g,
+                 boxes,
+                 scores,
+                 background_class=-1,
+                 box_coding=1,
+                 iou_threshold=0.45,
+                 max_output_boxes=100,
+                 plugin_version="1",
+                 score_activation=0,
+                 score_threshold=0.25):
+        out = g.op("TRT::EfficientNMS_TRT",
+                   boxes,
+                   scores,
+                   background_class_i=background_class,
+                   box_coding_i=box_coding,
+                   iou_threshold_f=iou_threshold,
+                   max_output_boxes_i=max_output_boxes,
+                   plugin_version_s=plugin_version,
+                   score_activation_i=score_activation,
+                   score_threshold_f=score_threshold,
+                   outputs=4)
+        nums, boxes, scores, classes = out
+        return nums, boxes, scores, classes
+
+
+class ONNX_ORT(nn.Module):
+    '''onnx module with ONNX-Runtime NMS operation.'''
+
+    def __init__(self, max_obj=100, iou_thres=0.45, score_thres=0.25, max_wh=640, device=None, n_classes=80):
+        super().__init__()
+        self.device = device if device else torch.device("cpu")
+        self.max_obj = torch.tensor([max_obj]).to(device)
+        self.iou_threshold = torch.tensor([iou_thres]).to(device)
+        self.score_threshold = torch.tensor([score_thres]).to(device)
+        self.max_wh = max_wh  # if max_wh != 0 : non-agnostic else : agnostic
+        self.convert_matrix = torch.tensor([[1, 0, 1, 0], [0, 1, 0, 1], [-0.5, 0, 0.5, 0], [0, -0.5, 0, 0.5]],
+                                           dtype=torch.float32,
+                                           device=self.device)
+        self.n_classes = n_classes
+
+    def forward(self, x):
+        boxes = x[:, :, :4]
+        conf = x[:, :, 4:5]
+        scores = x[:, :, 5:]
+        if self.n_classes == 1:
+            scores = conf  # for models with one class, cls_loss is 0 and cls_conf is always 0.5,
+            # so there is no need to multiplicate.
+        else:
+            scores *= conf  # conf = obj_conf * cls_conf
+        boxes @= self.convert_matrix
+        max_score, category_id = scores.max(2, keepdim=True)
+        dis = category_id.float() * self.max_wh
+        nmsbox = boxes + dis
+        max_score_tp = max_score.transpose(1, 2).contiguous()
+        selected_indices = ORT_NMS.apply(nmsbox, max_score_tp, self.max_obj, self.iou_threshold, self.score_threshold)
+        X, Y = selected_indices[:, 0], selected_indices[:, 2]
+        selected_boxes = boxes[X, Y, :]
+        selected_categories = category_id[X, Y, :].float()
+        selected_scores = max_score[X, Y, :]
+        X = X.unsqueeze(1).float()
+        return torch.cat([X, selected_boxes, selected_categories, selected_scores], 1)
+
+
+class ONNX_TRT(nn.Module):
+    '''onnx module with TensorRT NMS operation.'''
+
+    def __init__(self, max_obj=100, iou_thres=0.45, score_thres=0.25, max_wh=None, device=None, n_classes=80):
+        super().__init__()
+        assert max_wh is None
+        self.device = device if device else torch.device('cpu')
+        self.background_class = -1,
+        self.box_coding = 1,
+        self.iou_threshold = iou_thres
+        self.max_obj = max_obj
+        self.plugin_version = '1'
+        self.score_activation = 0
+        self.score_threshold = score_thres
+        self.n_classes = n_classes
+
+    def forward(self, x):
+        boxes = x[:, :, :4]
+        conf = x[:, :, 4:5]
+        scores = x[:, :, 5:]
+        if self.n_classes == 1:
+            scores = conf  # for models with one class, cls_loss is 0 and cls_conf is always 0.5,
+            # so there is no need to multiplicate.
+        else:
+            scores *= conf  # conf = obj_conf * cls_conf
+        num_det, det_boxes, det_scores, det_classes = TRT_NMS.apply(boxes, scores, self.background_class,
+                                                                    self.box_coding,
+                                                                    self.iou_threshold, self.max_obj,
+                                                                    self.plugin_version, self.score_activation,
+                                                                    self.score_threshold)
+        return num_det, det_boxes, det_scores, det_classes
+
+
+class End2End(nn.Module):
+    '''export onnx or tensorrt model with NMS operation.'''
+
+    def __init__(self, model, max_obj=100, iou_thres=0.45, score_thres=0.25, max_wh=None, device=None, n_classes=80):
+        super().__init__()
+        device = device if device else torch.device('cpu')
+        assert isinstance(max_wh, (int)) or max_wh is None
+        self.model = model.to(device)
+        self.model.model[-1].end2end = True
+        self.patch_model = ONNX_TRT if max_wh is None else ONNX_ORT
+        self.end2end = self.patch_model(max_obj, iou_thres, score_thres, max_wh, device, n_classes)
+        self.end2end.eval()
+
+    def forward(self, x):
+        x = self.model(x)
+        x = self.end2end(x)
+        return x
+
+
+def attempt_load(weights, map_location=None, inplace=True):
     # Loads an ensemble of models weights=[a,b,c] or a single model weights=[a] or weights=a
     model = Ensemble()
     for w in weights if isinstance(weights, list) else [weights]:
@@ -121,7 +256,9 @@ def attempt_load(weights, map_location=None):
     # Compatibility updates
     for m in model.modules():
         if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU]:
-            m.inplace = True  # pytorch 1.7.0 compatibility
+            m.inplace = inplace  # pytorch 1.7.0 compatibility
+        elif type(m) is nn.Upsample:
+            m.recompute_scale_factor = None  # torch 1.11.0 compatibility
         elif type(m) is Conv:
             m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
 

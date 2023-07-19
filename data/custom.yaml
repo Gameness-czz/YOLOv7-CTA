@@ -1,0 +1,26 @@
+# train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
+train: D:\python_project\YOLOv7-CTA\data\train\images\  # 799 images
+val: D:\python_project\YOLOv7-CTA\data\val\images\  # 343 images
+#test: D:\python_project\YOLOv7-CTA\data\test\images\
+
+# number of classes
+nc: 15
+
+# class names
+#names: ["archaeocyte", "myeloid", "myeloblast", "promyelocyte",
+#        "N-myelocyte", "N-metamyelocyte", "N-band", "N-segmented",
+#        "E-myelocyte", "E-metamyelocyte","E-band", "E-segmented",
+#        "B-myelocyte", "B-metamyelocyte", "B-band", "B-segmented",
+#        "pronormoblast", "basophilic-normoblast", "polychromatic-normoblast", "orthochromatic-normoplast",
+#        "lymphoblast", "prolymphocyte", "lymphocyte", "abnormal-lymphocyte", "atypical-lymphocyte",
+#        "monoblast", "promonocyte", "monocyte",
+#        "plasmablast", "proplasmacyte", "plasmacyte", "abnormal-phlogocyte",
+#        "histocyte", "phagocyte", "endothelial", "hypertrophic", "reticulocyte", "cyanobacteria", "others"]
+
+names: [ "myeloblast", "promyelocyte",
+         "N-myelocyte", "N-metamyelocyte", "N-band", "N-segmented",
+         "E-myelocyte", "E-metamyelocyte", "E-band", "E-segmented",
+         "basophil",
+         "P-normoblast", "O-normoplast",
+         "lymphocyte",
+         "monocyte"]

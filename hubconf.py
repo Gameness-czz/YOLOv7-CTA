@@ -1,8 +1,8 @@
-"""File for accessing YOLOv5 models via PyTorch Hub https://pytorch.org/hub/ultralytics_yolov5/
+"""PyTorch Hub models
 
 Usage:
     import torch
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model = torch.hub.load('repo', 'model')
 """
 
 from pathlib import Path
@@ -20,10 +20,10 @@ set_logging()
 
 
 def create(name, pretrained, channels, classes, autoshape):
-    """Creates a specified YOLOv5 model
+    """Creates a specified model
 
     Arguments:
-        name (str): name of model, i.e. 'yolov5s'
+        name (str): name of model, i.e. 'yolov7'
         pretrained (bool): load pretrained weights into the model
         channels (int): number of input channels
         classes (int): number of model classes
@@ -31,9 +31,9 @@ def create(name, pretrained, channels, classes, autoshape):
     Returns:
         pytorch model
     """
-    config = Path(__file__).parent / 'models' / f'{name}.yaml'  # model.yaml path
     try:
-        model = Model(config, channels, classes)
+        cfg = list((Path(__file__).parent / 'cfg').rglob(f'{name}.yaml'))[0]  # model.yaml path
+        model = Model(cfg, channels, classes)
         if pretrained:
             fname = f'{name}.pt'  # checkpoint filename
             attempt_download(fname)  # download if not found locally
@@ -50,13 +50,12 @@ def create(name, pretrained, channels, classes, autoshape):
         return model.to(device)
 
     except Exception as e:
-        help_url = 'https://github.com/ultralytics/yolov5/issues/36'
-        s = 'Cache maybe be out of date, try force_reload=True. See %s for help.' % help_url
+        s = 'Cache maybe be out of date, try force_reload=True.'
         raise Exception(s) from e
 
 
 def custom(path_or_model='path/to/model.pt', autoshape=True):
-    """YOLOv5-custom model https://github.com/ultralytics/yolov5
+    """custom mode
 
     Arguments (3 options):
         path_or_model (str): 'path/to/model.pt'
@@ -79,58 +78,19 @@ def custom(path_or_model='path/to/model.pt', autoshape=True):
     return hub_model.to(device)
 
 
-def yolov5s(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-small model https://github.com/ultralytics/yolov5
-    return create('yolov5s', pretrained, channels, classes, autoshape)
-
-
-def yolov5m(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-medium model https://github.com/ultralytics/yolov5
-    return create('yolov5m', pretrained, channels, classes, autoshape)
-
-
-def yolov5l(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-large model https://github.com/ultralytics/yolov5
-    return create('yolov5l', pretrained, channels, classes, autoshape)
-
-
-def yolov5x(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-xlarge model https://github.com/ultralytics/yolov5
-    return create('yolov5x', pretrained, channels, classes, autoshape)
-
-
-def yolov5s6(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-small model https://github.com/ultralytics/yolov5
-    return create('yolov5s6', pretrained, channels, classes, autoshape)
-
-
-def yolov5m6(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-medium model https://github.com/ultralytics/yolov5
-    return create('yolov5m6', pretrained, channels, classes, autoshape)
-
-
-def yolov5l6(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-large model https://github.com/ultralytics/yolov5
-    return create('yolov5l6', pretrained, channels, classes, autoshape)
-
-
-def yolov5x6(pretrained=True, channels=3, classes=80, autoshape=True):
-    # YOLOv5-xlarge model https://github.com/ultralytics/yolov5
-    return create('yolov5x6', pretrained, channels, classes, autoshape)
+def yolov7(pretrained=True, channels=3, classes=80, autoshape=True):
+    return create('yolov7', pretrained, channels, classes, autoshape)
 
 
 if __name__ == '__main__':
-    model = create(name='yolov5s', pretrained=True, channels=3, classes=80, autoshape=True)  # pretrained example
-    # model = custom(path_or_model='path/to/model.pt')  # custom example
+    model = custom(path_or_model='yolov7_training.pt')  # custom example
+    # model = create(name='yolov7', pretrained=True, channels=3, classes=80, autoshape=True)  # pretrained example
 
     # Verify inference
     import numpy as np
     from PIL import Image
 
-    imgs = [Image.open('data/images/bus.jpg'),  # PIL
-            'data/images/zidane.jpg',  # filename
-            'https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg',  # URI
-            np.zeros((640, 480, 3))]  # numpy
+    imgs = [np.zeros((640, 480, 3))]
 
     results = model(imgs)  # batched inference
     results.print()
