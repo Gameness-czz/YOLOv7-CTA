@@ -28,7 +28,7 @@ Implementation of paper - @link
 
 ![loss.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/contrast_results/loss.png?raw=true)
 
-**Figure ** **5**. The loss curves of the models were compared on the testing dataset.
+**Figure** **5**. The loss curves of the models were compared on the testing dataset. 
 
 Demo
 
