@@ -1,0 +1,15 @@
+myeloblast
+promyelocyte
+N-myelocyte
+N-metamyelocyte
+N-band
+N-segmented
+E-myelocyte
+E-metamyelocyte
+E-band
+E-segmented
+basophil
+P-normoblast
+O-normoplast
+lymphocyte
+monocyte
