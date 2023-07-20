@@ -73,5 +73,5 @@ python train.py --workers 0 --device 0 --batch-size 4 --data data/custom.yaml --
 
 On image:
 ``` bash
-python detect.py --weights runs/exp_v7-CTA --conf 0.25 --img-size 640 --source data/val/images/
+python detect.py --weights runs/exp_v7-CTA/weights/best.pt --conf 0.25 --img-size 640 --source data/val/images/
 ```
