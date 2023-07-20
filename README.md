@@ -1,4 +1,4 @@
-# Official YOLOv7-CTA
+# Improved YOLOv7 Algorithm for Detecting Bone Marrow Cell
 
 Implementation of paper - @link
 
