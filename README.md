@@ -51,7 +51,7 @@ Demo
 
 ## Performance 
 
-BM cells datasets
+BM cells datasets （GPU：NVIDIA GeForce GTX1660 Ti (6G)）
 
 | **Models**   | **Backbone**      | **mAP@0.5/%** | **FPS** |
 | ------------ | ----------------- | ------------- | ------- |
