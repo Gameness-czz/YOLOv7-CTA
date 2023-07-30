@@ -25,7 +25,7 @@ local_rank: -1
 workers: 0
 project: runs/train
 entity: null
-name: exp_v7-1-CTA_Focal_CIoU
+name: exp_v7-CTA_Kmeans++_Focal_CIoU
 exist_ok: false
 quad: false
 linear_lr: false
@@ -36,5 +36,5 @@ save_period: -1
 artifact_alias: latest
 world_size: 1
 global_rank: -1
-save_dir: runs\train\exp_v7-CTA_Focal_CIoU
+save_dir: runs\train\exp_v7-CTA_Kmeans++_Focal_CIoU
 total_batch_size: 4
