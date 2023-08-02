@@ -63,7 +63,7 @@ BM cells datasets （GPU：NVIDIA GeForce GTX1660 Ti (6G)）
 ## Testing
 
 ``` bash
-python test.py --data data/custom.yaml --img 640 --batch 4 --conf 0.001 --iou 0.65 --device 0 --weights '' --name exp_v7-CTA
+python test.py --data data/custom.yaml --img 640 --batch 4 --conf 0.001 --iou 0.65 --device 0 --weights runs/exp_v7-CTA_K-means++_Focal_CIoU/weights/best.pt --name exp_v7-CTA
 ```
 
 ## Training
@@ -71,12 +71,12 @@ python test.py --data data/custom.yaml --img 640 --batch 4 --conf 0.001 --iou 0.
 Single GPU training
 
 ``` bash
-python train.py --workers 0 --device 0 --batch-size 4 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7_CTA.yaml --weights '' --name exp_v7-CTA --hyp data/hyp.scratch.custom.yaml
+python train.py --workers 0 --device 0 --batch-size 4 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7_CTA.yaml --weights --name exp_v7-CTA_K-means++_Focal_CIoU --hyp data/hyp.scratch.custom.yaml
 ```
 
 ## Inference
 
 On image:
 ``` bash
-python detect.py --weights runs/exp_v7-CTA/weights/best.pt --conf 0.25 --img-size 640 --source data/val/images/
+python detect.py --weights runs/exp_v7-CTA_K-means++_Focal_CIoU/weights/best.pt --conf 0.25 --img-size 640 --source data/val/images/
 ```
