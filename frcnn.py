@@ -11,6 +11,8 @@ from nets.frcnn import FasterRCNN
 from utils.utils import (cvtColor, get_classes, get_new_img_size, resize_image,
                          preprocess_input, show_config)
 from utils.utils_bbox import DecodeBox
+from thop import profile
+from copy import deepcopy
 
 
 # --------------------------------------------#
@@ -47,7 +49,7 @@ class FRCNN(object):
         # ---------------------------------------------------------------------#
         #   用于指定先验框的大小
         # ---------------------------------------------------------------------#
-        'anchors_size': [4, 8, 16],
+        'anchors_size': [4, 16, 32],
         # -------------------------------#
         #   是否使用Cuda
         #   没有GPU可以设置成False
@@ -103,13 +105,27 @@ class FRCNN(object):
         # -------------------------------#
         self.net = FasterRCNN(self.num_classes, "predict", anchor_scales=self.anchors_size, backbone=self.backbone)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # device = torch.device('cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
+
         self.net = self.net.eval()
         print('{} model, anchors, and classes loaded.'.format(self.model_path))
 
         if self.cuda:
             self.net = nn.DataParallel(self.net)
             self.net = self.net.cuda()
+
+        model = self.net
+        print(model)
+
+        # Model information. img_size may be int or list, i.e. img_size=640 or img_size=[640, 320]
+        n_p = sum(x.numel() for x in model.parameters())  # number parameters
+
+        img = torch.zeros((1, 3, 640, 640), device=device)  # input
+        flops = profile(deepcopy(model), inputs=(img,), verbose=False)[0] / 1E9 * 2  # GFLOPS
+        fs = ', %.1f GFLOPS' % flops  # 640x640 GFLOPS
+
+        print(f"Model Summary: {len(list(model.modules()))} layers, {n_p} parameters{fs}")
 
     # ---------------------------------------------------#
     #   检测图片
