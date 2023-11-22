@@ -5,7 +5,7 @@ Zhizhao Cheng and Yuanyuan Li
 ## Introduction
 In this paper, an improved BM cells detection algorithm YOLOv7-CTA based on YOLOv7 is proposed. This method can identify BM cells images more accurately than similar models. Experimental analysis shows that a new feature extraction network CoTLAN is designed in the backbone network, which can improve the fine-grained feature extraction capability. The coordinate attention (CoordAtt) module is combined in the network to make the model pay more attention to the features of the area to be detected, reduce irrelevant features, and improve the detection effect of the model. Finally, under the determined network structure, the model is optimized through the selection of loss function, the use of K-means++ algorithm for clustering the target frame of BM cells dataset, and the replacement of cross entropy. The experimental results show that the mAP of the optimized model reaches 88.6%, surpassing the Faster R-CNN, YOLOv5l, and YOLOv7 models by 13.9%, 8.3%, and 6.7%, respectively. Furthermore, the detection speed of this model is 22 fps, effectively satisfying the requirements for high performance. Compared with other models, the YOLOv7-CTA model has superiority in the BM cell detection task.
 
-Implementation of paper - @link
+Implementation of paper - @https://www.mdpi.com/1424-8220/23/17/7640
 
 | ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7/PR_curve.png?raw=true) | ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7-CTA_Focal_CIoU/PR_curve.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
