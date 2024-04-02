@@ -7,7 +7,7 @@ In this paper, an improved BM cells detection algorithm YOLOv7-CTA based on YOLO
 
 Implementation of paper - @https://www.mdpi.com/1424-8220/23/17/7640
 
-| ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7/PR_curve.png?raw=true) | ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7-CTA_Focal_CIoU/PR_curve.png?raw=true) |
+| ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7/PR_curve.png?raw=true) | ![PR_curve.png](https://github.com/Gameness-czz/YOLOv7-CTA/blob/main/runs/test/exp_v7-CTA_K-means++_Focal_CIoU/PR_curve.png?raw=true) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | (**a**)                                                      | (**b**)                                                      |
 
